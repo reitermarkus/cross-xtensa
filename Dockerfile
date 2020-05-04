@@ -62,6 +62,7 @@ RUN apt-get update \
 
 ENV XARGO_RUST_SRC="${RUST_XTENSA_SRC}"
 
+
 # IDF
 
 ARG IDF_VERSION='release/v4.1'
@@ -69,12 +70,21 @@ ENV IDF_PATH=/opt/esp/idf
 ENV IDF_TOOLS_PATH=/opt/esp/idf-tools
 
 RUN apt-get update \
- && dependencies='git make python' \
+ && dependencies='\
+      bison \
+      ca-certificates \
+      ccache cmake flex git gperf jq \
+      libffi-dev libncurses-dev libssl-dev \
+      make ninja-build \
+      python3 python3-pip python3-setuptools python3-wheel \
+      wget' \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
+ && update-alternatives --install /usr/bin/python python /usr/bin/python3 10 \
  && git clone -b "${IDF_VERSION}" --depth 1 --recursive https://github.com/espressif/esp-idf "${IDF_PATH}" \
- && git -C "${IDF_PATH}" checkout --recurse-submodules "${IDF_VERSION}" \
- && pip install -r "${IDF_PATH}/requirements.txt" \
- && "${IDF_PATH}/install.sh" \
+ && cd "${IDF_PATH}" \
+ && pip3 install -r requirements.txt \
+ && ./install.sh \
+ && cd - \
  && chmod -R 0777 "${IDF_PATH}" \
  && chmod -R 0777 "${IDF_TOOLS_PATH}" \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
