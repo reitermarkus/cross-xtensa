@@ -25,8 +25,8 @@ RUN apt-get update \
       -DCMAKE_BUILD_TYPE=Release \
  && cmake --build . \
  && cmake -DCMAKE_INSTALL_PREFIX="${LLVM_XTENSA_PREFIX}" -P cmake_install.cmake \
- && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -r "${LLVM_XTENSA_SRC}" \
+ && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
 
 FROM ubuntu:18.04 as rust
@@ -42,7 +42,6 @@ ENV RUST_XTENSA_PREFIX=/rust-xtensa
 RUN apt-get update \
  && dependencies="cmake curl git libssl-dev make pkg-config python" \
  && apt-get install --assume-yes ${dependencies} \
- && rm -rf /var/lib/apt/lists/* \
  && git clone --depth 1 -b "${RUST_XTENSA_BRANCH}" "${RUST_XTENSA_REPO}" "${RUST_XTENSA_SRC}" \
  && cd "${RUST_XTENSA_SRC}" \
  && mkdir -p "${RUST_XTENSA_PREFIX}" \
@@ -56,6 +55,6 @@ RUN apt-get update \
  && ./x.py build \
  && ./x.py install \
  && ./x.py clean \
- && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -r build \
+ && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
