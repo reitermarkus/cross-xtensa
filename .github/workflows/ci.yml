@@ -13,8 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build LLVM
-        run: docker build -t '${{ github.actor }}/cross-xtensa:llvm' -f llvm.Dockerfile .
-      - name: Log into registry
+        run: |
+          image='${{ github.actor }}/cross-xtensa:llvm'
+          docker pull "${image}" || true
+          docker build --pull --cache-from "${image}" -t "${image}" --target llvm .
+      - name: Log into Docker Hub
         run: echo '${{ secrets.DOCKER_TOKEN }}' | docker login -u ${{ github.actor }} --password-stdin
       - name: Push LLVM
         run: docker push '${{ github.actor }}/cross-xtensa:llvm'

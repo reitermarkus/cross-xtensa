@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as llvm
 
 ARG LLVM_XTENSA_BRANCH=xtensa_release_9.0.1
 ARG LLVM_XTENSA_REPO=https://github.com/espressif/llvm-project.git
