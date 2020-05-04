@@ -12,19 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Build LLVM
+      - name: Build Docker Image
         run: |
-          image='${{ github.actor }}/cross-xtensa:llvm'
+          image='${{ github.actor }}/cross-xtensa'
           docker pull "${image}" || true
-          docker build --pull --cache-from "${image}" -t "${image}" --target llvm .
-      - name: Build Rust
-        run: |
-          image='${{ github.actor }}/cross-xtensa:rust'
-          docker pull "${image}" || true
-          docker build --pull --cache-from '${{ github.actor }}/cross-xtensa:llvm' --cache-from "${image}" -t "${image}" --target rust .
+          docker build --pull --cache-from "${image}" -t "${image}" .
       - name: Log into Docker Hub
         run: echo '${{ secrets.DOCKER_TOKEN }}' | docker login -u ${{ github.actor }} --password-stdin
-      - name: Push LLVM
-        run: docker push '${{ github.actor }}/cross-xtensa:llvm'
-      - name: Push Rust
-        run: docker push '${{ github.actor }}/cross-xtensa:rust'
+      - name: Push Docker Image
+        run: docker push '${{ github.actor }}/cross-xtensa'
