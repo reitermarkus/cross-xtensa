@@ -28,3 +28,34 @@ RUN apt-get update \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -r "${LLVM_XTENSA_SRC}" \
  && rm -rf /var/lib/apt/lists/*
+
+FROM ubuntu:18.04 as rust
+
+ENV LLVM_XTENSA_PREFIX="/llvm-xtensa"
+COPY --from=llvm "${LLVM_XTENSA_PREFIX}" "${LLVM_XTENSA_PREFIX}"
+
+ARG RUST_XTENSA_BRANCH=xtensa-support-master
+ARG RUST_XTENSA_REPO=https://github.com/reitermarkus/rust
+ENV RUST_XTENSA_SRC=/rust-xtensa-src
+ENV RUST_XTENSA_PREFIX=/rust-xtensa
+
+RUN apt-get update \
+ && dependencies="cmake curl git libssl-dev make pkg-config python" \
+ && apt-get install --assume-yes ${dependencies} \
+ && rm -rf /var/lib/apt/lists/* \
+ && git clone --depth 1 -b "${RUST_XTENSA_BRANCH}" "${RUST_XTENSA_REPO}" "${RUST_XTENSA_SRC}" \
+ && cd "${RUST_XTENSA_SRC}" \
+ && mkdir -p "${RUST_XTENSA_PREFIX}" \
+ && ./configure \
+      --enable-lld \
+      --disable-docs \
+      --disable-compiler-docs \
+      --llvm-root="${LLVM_XTENSA_PREFIX}" \
+      --prefix="${RUST_XTENSA_PREFIX}" \
+      --release-channel=nightly \
+ && ./x.py build \
+ && ./x.py install \
+ && ./x.py clean \
+ && apt-get purge --assume-yes --auto-remove ${dependencies} \
+ && rm -r build \
+ && rm -rf /var/lib/apt/lists/*
