@@ -1,13 +1,16 @@
-FROM ubuntu:18.04 as llvm
+FROM ubuntu:18.04
+
+
+# LLVM
 
 ARG LLVM_XTENSA_BRANCH=xtensa_release_9.0.1
 ARG LLVM_XTENSA_REPO=https://github.com/espressif/llvm-project.git
-ENV LLVM_XTENSA_PREFIX="/llvm-xtensa"
+ENV LLVM_XTENSA_PREFIX=/opt/xtensa/llvm
 
 RUN apt-get update \
  && dependencies="cmake g++ ca-certificates git ninja-build python" \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
- && export LLVM_XTENSA_SRC=/tmp/llvm-xtensa \
+ && export LLVM_XTENSA_SRC=/tmp/llvm \
  && git clone --depth 1 -b "${LLVM_XTENSA_BRANCH}" "${LLVM_XTENSA_REPO}" "${LLVM_XTENSA_SRC}" \
  && cd "${LLVM_XTENSA_SRC}" \
  && mkdir build \
@@ -29,19 +32,17 @@ RUN apt-get update \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
 
-FROM ubuntu:18.04 as rust
 
-ENV LLVM_XTENSA_PREFIX="/llvm-xtensa"
-COPY --from=llvm "${LLVM_XTENSA_PREFIX}" "${LLVM_XTENSA_PREFIX}"
+# Rust
 
 ARG RUST_XTENSA_BRANCH=xtensa-support-master
 ARG RUST_XTENSA_REPO=https://github.com/reitermarkus/rust
-ENV RUST_XTENSA_SRC=/rust-xtensa-src
-ENV RUST_XTENSA_PREFIX=/rust-xtensa
+ENV RUST_XTENSA_SRC=/opt/xtensa/rust-src
+ENV RUST_XTENSA_PREFIX=/opt/xtensa/rust
 
 RUN apt-get update \
  && dependencies="cmake curl git libssl-dev make pkg-config python" \
- && apt-get install --assume-yes ${dependencies} \
+ && apt-get install --assume-yes --no-install-recommends ${dependencies} \
  && git clone --depth 1 -b "${RUST_XTENSA_BRANCH}" "${RUST_XTENSA_REPO}" "${RUST_XTENSA_SRC}" \
  && cd "${RUST_XTENSA_SRC}" \
  && mkdir -p "${RUST_XTENSA_PREFIX}" \
@@ -58,3 +59,28 @@ RUN apt-get update \
  && rm -r build \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
+
+
+# IDF
+
+COPY --from=rust /opt/xtensa /opt/xtensa
+ENV XARGO_RUST_SRC=/opt/xtensa/rust-src
+
+ARG IDF_VERSION='release/v4.1'
+ENV IDF_PATH=/opt/esp/idf
+ENV IDF_TOOLS_PATH=/opt/esp/idf-tools
+
+RUN apt-get update \
+ && dependencies="git make python" \
+ && apt-get install --assume-yes --no-install-recommends ${dependencies} \
+ && git clone -b "${IDF_VERSION}" --depth 1 --recursive https://github.com/espressif/esp-idf "${IDF_PATH}" \
+ && git -C "${IDF_PATH}" checkout --recurse-submodules "${IDF_VERSION}" \
+ && pip install -r "${IDF_PATH}/requirements.txt" \
+ && "${IDF_PATH}/install.sh" \
+ && chmod -R 0777 "${IDF_PATH}" \
+ && chmod -R 0777 "${IDF_TOOLS_PATH}" \
+ && apt-get purge --assume-yes --auto-remove ${dependencies} \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]

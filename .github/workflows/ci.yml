@@ -22,9 +22,16 @@ jobs:
           image='${{ github.actor }}/cross-xtensa:rust'
           docker pull "${image}" || true
           docker build --pull --cache-from '${{ github.actor }}/cross-xtensa:llvm' --cache-from "${image}" -t "${image}" --target rust .
+      - name: Build IDF
+        run: |
+          image='${{ github.actor }}/cross-xtensa:idf'
+          docker pull "${image}" || true
+          docker build --pull --cache-from '${{ github.actor }}/cross-xtensa:llvm' --cache-from "${image}" -t "${image}" --target rust .
       - name: Log into Docker Hub
         run: echo '${{ secrets.DOCKER_TOKEN }}' | docker login -u ${{ github.actor }} --password-stdin
       - name: Push LLVM
         run: docker push '${{ github.actor }}/cross-xtensa:llvm'
       - name: Push Rust
         run: docker push '${{ github.actor }}/cross-xtensa:rust'
+      - name: Push IDF
+        run: docker push '${{ github.actor }}/cross-xtensa:idf'
