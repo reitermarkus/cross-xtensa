@@ -8,7 +8,14 @@ ARG LLVM_XTENSA_REPO=https://github.com/espressif/llvm-project.git
 ENV LLVM_XTENSA_PREFIX=/opt/xtensa/llvm
 
 RUN apt-get update \
- && dependencies='cmake g++ ca-certificates git ninja-build python' \
+ && dependencies='\
+      ca-certificates \
+      cmake \
+      g++ \
+      git \
+      ninja-build \
+      python \
+    ' \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
  && export LLVM_XTENSA_SRC=/tmp/llvm \
  && git clone --depth 1 -b "${LLVM_XTENSA_BRANCH}" "${LLVM_XTENSA_REPO}" "${LLVM_XTENSA_SRC}" \
@@ -41,7 +48,16 @@ ENV RUST_XTENSA_SRC=/opt/xtensa/rust-src
 ENV RUST_XTENSA_PREFIX=/opt/xtensa/rust
 
 RUN apt-get update \
- && dependencies='cmake curl git libssl-dev make pkg-config python' \
+ && dependencies='\
+      ca-certificates \
+      cmake \
+      curl \
+      git \
+      libssl-dev \
+      make \
+      pkg-config \
+      python\
+    ' \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
  && git clone --depth 1 -b "${RUST_XTENSA_BRANCH}" "${RUST_XTENSA_REPO}" "${RUST_XTENSA_SRC}" \
  && cd "${RUST_XTENSA_SRC}" \
@@ -73,11 +89,23 @@ RUN apt-get update \
  && dependencies='\
       bison \
       ca-certificates \
-      ccache cmake flex git gperf jq \
-      libffi-dev libncurses-dev libssl-dev \
-      make ninja-build \
-      python3 python3-pip python3-setuptools python3-wheel \
-      wget' \
+      ccache \
+      cmake \
+      flex \
+      git \
+      gperf \
+      jq \
+      libffi-dev \
+      libncurses-dev \
+      libssl-dev \
+      make \
+      ninja-build \
+      python3 \
+      python3-pip \
+      python3-setuptools \
+      python3-wheel \
+      wget \
+    ' \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
  && update-alternatives --install /usr/bin/python python /usr/bin/python3 10 \
  && git clone -b "${IDF_VERSION}" --depth 1 --recursive https://github.com/espressif/esp-idf "${IDF_PATH}" \
