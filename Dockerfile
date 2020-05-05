@@ -54,6 +54,7 @@ RUN apt-get update \
       ca-certificates \
       cmake \
       curl \
+      gcc \
       git \
       libssl-dev \
       make \
