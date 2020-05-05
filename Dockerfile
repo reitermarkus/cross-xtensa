@@ -82,6 +82,7 @@ ENV PATH="${RUST_XTENSA_PREFIX}/bin:${PATH}"
 
 ENV XARGO_RUST_SRC="${RUST_XTENSA_SRC}"
 
+
 # IDF
 
 ARG IDF_VERSION='release/v4.1'
@@ -120,6 +121,7 @@ RUN apt-get update \
  && chmod -R 0777 "${IDF_TOOLS_PATH}" \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
+
 
 COPY entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
