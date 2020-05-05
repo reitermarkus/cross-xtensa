@@ -49,7 +49,6 @@ RUN apt-get update \
       ca-certificates \
       curl \
       gcc \
-      gnupg \
       libc-dev \
     ' \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
@@ -71,6 +70,7 @@ RUN apt-get update \
       ca-certificates \
       cmake \
       curl \
+      g++ \
       gcc \
       git \
       libc-dev \
