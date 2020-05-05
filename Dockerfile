@@ -39,6 +39,8 @@ RUN apt-get update \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
 
+ENV PATH="${LLVM_XTENSA_PREFIX}/bin:${PATH}"
+
 
 # Rust
 
@@ -76,8 +78,9 @@ RUN apt-get update \
  && apt-get purge --assume-yes --auto-remove ${dependencies} \
  && rm -rf /var/lib/apt/lists/*
 
-ENV XARGO_RUST_SRC="${RUST_XTENSA_SRC}"
+ENV PATH="${RUST_XTENSA_PREFIX}/bin:${PATH}"
 
+ENV XARGO_RUST_SRC="${RUST_XTENSA_SRC}"
 
 # IDF
 
