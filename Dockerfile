@@ -70,6 +70,7 @@ RUN apt-get update \
       curl \
       gcc \
       git \
+      libc6-dev \
       libssl-dev \
       make \
       pkg-config \
