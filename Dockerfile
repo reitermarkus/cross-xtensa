@@ -49,6 +49,8 @@ RUN apt-get update \
       ca-certificates \
       curl \
       gcc \
+      gnupg \
+      libc-dev \
     ' \
  && apt-get install --assume-yes --no-install-recommends ${dependencies} \
  && curl -sSfL https://raw.githubusercontent.com/rust-embedded/cross/master/docker/xargo.sh -o xargo.sh \
@@ -71,7 +73,7 @@ RUN apt-get update \
       curl \
       gcc \
       git \
-      libc6-dev \
+      libc-dev \
       libssl-dev \
       make \
       pkg-config \
