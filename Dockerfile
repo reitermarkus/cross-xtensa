@@ -60,7 +60,7 @@ RUN apt-get update \
 
 # Rust
 
-ARG RUST_XTENSA_BRANCH=xtensa-support-master
+ARG RUST_XTENSA_BRANCH=xtensa-support-master-new
 ARG RUST_XTENSA_REPO=https://github.com/reitermarkus/rust
 ENV RUST_XTENSA_SRC=/opt/xtensa/rust-src
 ENV RUST_XTENSA_PREFIX=/opt/xtensa/rust
